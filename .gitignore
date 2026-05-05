@@ -1,0 +1,7 @@
+frontend-vue/node_modules/
+frontend-vue/dist/
+backend-csharp/bin/
+backend-csharp/obj/
+.vs/
+.idea/
+.vscode/

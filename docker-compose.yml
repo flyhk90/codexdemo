@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  score-api:
+    build: 
+      context: ./backend-csharp
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/score.db
+    restart: unless-stopped

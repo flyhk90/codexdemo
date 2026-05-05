@@ -1,0 +1,57 @@
+<view class="container">
+  <view class="score-card">
+    <view class="score-display">
+      <view class="score-label">当前分数</view>
+      <view class="score-value" :class="scoreAnimation">{{ score }}</view>
+      <view wx:if="{{ loading }}" class="loading">加载中...</view>
+    </view>
+  </view>
+
+  <view class="control-panel">
+    <view class="button-group">
+      <view class="button-label">加分</view>
+      <view class="buttons-row">
+        <button class="btn btn-add" bindtap="addScore" data-value="1">+1</button>
+        <button class="btn btn-add" bindtap="addScore" data-value="5">+5</button>
+        <button class="btn btn-add" bindtap="addScore" data-value="10">+10</button>
+        <button class="btn btn-add" bindtap="addScore" data-value="50">+50</button>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <view class="button-label">减分</view>
+      <view class="buttons-row">
+        <button class="btn btn-subtract" bindtap="subtractScore" data-value="1">-1</button>
+        <button class="btn btn-subtract" bindtap="subtractScore" data-value="5">-5</button>
+        <button class="btn btn-subtract" bindtap="subtractScore" data-value="10">-10</button>
+        <button class="btn btn-subtract" bindtap="subtractScore" data-value="50">-50</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-panel">
+    <button class="btn-reset" bindtap="resetScore">重置分数</button>
+    <button class="btn-history" bindtap="toggleHistory">
+      {{ showHistory ? '隐藏记录' : '查看记录' }}
+    </button>
+  </view>
+
+  <view class="history-panel" wx:if="{{ showHistory }}">
+    <view class="history-header">
+      <text class="history-title">操作记录</text>
+      <text class="history-clear" bindtap="clearHistory">清空</text>
+    </view>
+    <scroll-view class="history-list" scroll-y>
+      <view wx:if="{{ history.length === 0 }}" class="empty-history">
+        暂无记录
+      </view>
+      <view wx:else wx:for="{{ history }}" wx:key="id" class="history-item">
+        <view class="history-value" :class="item.value > 0 ? 'positive' : 'negative'">
+          {{ item.value > 0 ? '+' : '' }}{{ item.value }}
+        </view>
+        <view class="history-score">→ {{ item.newScore }}</view>
+        <view class="history-time">{{ formatTime(item.time) }}</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
