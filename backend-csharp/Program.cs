@@ -3,6 +3,8 @@ using backend_csharp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("hello");
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
