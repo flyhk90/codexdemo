@@ -7,8 +7,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var databaseOptions = builder.Configuration
+    .GetSection(DatabaseOptions.SectionName)
+    .Get<DatabaseOptions>() ?? new DatabaseOptions();
+
+builder.Services.Configure<DatabaseOptions>(
+    builder.Configuration.GetSection(DatabaseOptions.SectionName));
+
+if (!string.Equals(databaseOptions.Provider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+{
+    throw new InvalidOperationException($"Unsupported database provider: {databaseOptions.Provider}");
+}
+
+var connectionString = builder.Configuration.GetConnectionString(databaseOptions.ConnectionStringName);
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        $"Connection string '{databaseOptions.ConnectionStringName}' is not configured.");
+}
+
 builder.Services.AddDbContext<ScoreContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString));
 
 builder.Services.AddCors(options =>
 {
@@ -25,8 +44,11 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ScoreContext>();
-    dbContext.Database.EnsureCreated();
+    if (databaseOptions.EnsureCreated)
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ScoreContext>();
+        dbContext.Database.EnsureCreated();
+    }
 }
 
 if (app.Environment.IsDevelopment())
